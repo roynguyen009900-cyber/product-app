@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" class="wa-theme-default wa-dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Edit — ' + ${product.title}">Edit Product</title>
+
+    <!-- Web Awesome -->
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css">
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"></script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(124, 92, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(157, 124, 255, 0.06) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7c5cfc, #9d7cff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--wa-color-neutral-500);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        wa-card {
+            margin-bottom: 1.5rem;
+        }
+
+        wa-card::part(body) {
+            padding: var(--wa-space-l);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--wa-color-brand-500);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: color 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--wa-color-brand-300);
+        }
+
+        .success-banner {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            color: var(--wa-color-success-500);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        /* Variant table styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--wa-border-radius-l);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead th {
+            background: var(--wa-color-neutral-100);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--wa-color-neutral-500);
+            border-bottom: 1px solid var(--wa-color-neutral-200);
+        }
+
+        table tbody td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--wa-color-neutral-200);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        table tbody tr:hover {
+            background: var(--wa-color-neutral-50);
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .price {
+            font-weight: 600;
+            color: var(--wa-color-success-600);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-links">
+            <a href="/">
+                <wa-icon name="arrow-left"></wa-icon>
+                Back to Home
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <wa-icon name="pencil-square" style="font-size: 1.8rem;"></wa-icon>
+                Edit Product
+            </h1>
+            <p th:text="'Editing: ' + ${product.title}">Editing product</p>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${successMessage}" class="success-banner">
+            <wa-icon name="check-circle-fill"></wa-icon>
+            <span th:text="${successMessage}">Success</span>
+        </div>
+
+        <!-- Edit Form Card -->
+        <wa-card>
+            <div class="card-header">
+                <div class="card-title">
+                    <wa-icon name="pencil-fill" style="color: var(--wa-color-brand-500);"></wa-icon>
+                    Product Details
+                </div>
+            </div>
+            <form th:action="@{/products/{id}(id=${product.id})}" method="post">
+                <div class="form-grid">
+                    <wa-input label="Product Title *" name="title" th:value="${product.title}"
+                        placeholder="e.g. Sport Leggings" required appearance="filled">
+                        <wa-icon slot="prefix" name="tag"></wa-icon>
+                    </wa-input>
+                    <wa-input label="Vendor" name="vendor" th:value="${product.vendor}" placeholder="e.g. Famme"
+                        appearance="filled">
+                        <wa-icon slot="prefix" name="shop"></wa-icon>
+                    </wa-input>
+                    <wa-input label="Product Type" name="productType" th:value="${product.productType}"
+                        placeholder="e.g. Leggings" appearance="filled">
+                        <wa-icon slot="prefix" name="grid"></wa-icon>
+                    </wa-input>
+                    <wa-input label="Price" name="price" type="number" step="0.01" th:value="${product.price}"
+                        placeholder="0.00" appearance="filled">
+                        <wa-icon slot="prefix" name="currency-dollar"></wa-icon>
+                    </wa-input>
+                </div>
+                <wa-button type="submit" variant="brand" style="margin-top: 0.5rem;">
+                    <wa-icon slot="prefix" name="floppy"></wa-icon>
+                    Save Changes
+                </wa-button>
+            </form>
+        </wa-card>
+
+        <!-- Variants Card -->
+        <wa-card th:if="${!#lists.isEmpty(product.variants)}">
+            <div class="card-header">
+                <div class="card-title">
+                    <wa-icon name="list-ul" style="color: var(--wa-color-success-500);"></wa-icon>
+                    Variants
+                    <wa-badge variant="neutral" pill th:text="${#lists.size(product.variants)}">0</wa-badge>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>SKU</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="variant : ${product.variants}">
+                            <td th:text="${variant.title}">Variant</td>
+                            <td>
+                                <span th:if="${variant.sku != null}" style="font-size: 0.78rem; font-family: monospace;"
+                                    th:text="${variant.sku}">SKU</span>
+                            </td>
+                            <td class="price" th:text="'$' + ${#numbers.formatDecimal(variant.price, 1, 2)}">$0.00</td>
+                            <td th:id="'variant-cell-' + ${variant.id}">
+                                <div
+                                    th:replace="~{fragments/variant-availability :: variantAvailability(variant=${variant})}">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </wa-card>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="variantAvailability">
+        <span th:if="${variant.available}"
+            style="font-size: 0.85rem; color: var(--wa-color-success-600); display: flex; align-items: center; gap: 0.4rem;">
+            <wa-icon name="check-circle" style="font-size: 0.85rem;"></wa-icon>
+            Available
+            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+                th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
+                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                <wa-icon slot="prefix" name="toggle-on" style="font-size: 0.8rem;"></wa-icon>
+                Toggle
+            </wa-button>
+        </span>
+        <span th:unless="${variant.available}"
+            style="font-size: 0.85rem; color: var(--wa-color-danger-600); display: flex; align-items: center; gap: 0.4rem;">
+            <wa-icon name="x-circle" style="font-size: 0.85rem;"></wa-icon>
+            Sold Out
+            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+                th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
+                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                <wa-icon slot="prefix" name="toggle-off" style="font-size: 0.8rem;"></wa-icon>
+                Toggle
+            </wa-button>
+        </span>
+    </div>
+</body>
+
+</html>

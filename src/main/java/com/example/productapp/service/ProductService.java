@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -20,6 +21,19 @@ public class ProductService {
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    public Optional<Product> getProductById(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        product.ifPresent(p -> p.setVariants(productRepository.findVariantsByProductId(p.getId())));
+        return product;
+    }
+
+    public List<Product> searchProducts(String query) {
+        if (query == null || query.isBlank()) {
+            return productRepository.findAll();
+        }
+        return productRepository.searchByTitle(query.trim());
     }
 
     public Product addProduct(String title, String vendor, String productType, BigDecimal price,
@@ -43,6 +57,25 @@ public class ProductService {
         }
 
         return product;
+    }
+
+    public void updateProduct(Long id, String title, String vendor, String productType, BigDecimal price) {
+        Product product = new Product();
+        product.setId(id);
+        product.setTitle(title);
+        product.setVendor(vendor);
+        product.setProductType(productType);
+        product.setPrice(price);
+        productRepository.update(product);
+    }
+
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    public Optional<ProductVariant> toggleVariantAvailability(Long variantId) {
+        productRepository.toggleVariantAvailability(variantId);
+        return productRepository.findVariantById(variantId);
     }
 
     public long getProductCount() {

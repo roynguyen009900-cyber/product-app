@@ -146,6 +146,58 @@ public class ProductRepository {
                 .single();
     }
 
+    public List<Product> searchByTitle(String query) {
+        List<Product> products = jdbcClient.sql("""
+                SELECT id, external_id, title, handle, vendor, product_type, image_url, price, created_at
+                FROM products WHERE title ILIKE :query ORDER BY created_at DESC
+                """)
+                .param("query", "%" + query + "%")
+                .query((rs, rowNum) -> mapProduct(rs))
+                .list();
+
+        for (Product product : products) {
+            List<ProductVariant> variants = findVariantsByProductId(product.getId());
+            product.setVariants(variants);
+        }
+
+        return products;
+    }
+
+    public void update(Product product) {
+        jdbcClient.sql("""
+                UPDATE products SET title = :title, vendor = :vendor, product_type = :productType, price = :price
+                WHERE id = :id
+                """)
+                .param("id", product.getId())
+                .param("title", product.getTitle())
+                .param("vendor", product.getVendor())
+                .param("productType", product.getProductType())
+                .param("price", product.getPrice())
+                .update();
+    }
+
+    public void deleteById(Long id) {
+        jdbcClient.sql("DELETE FROM products WHERE id = :id")
+                .param("id", id)
+                .update();
+    }
+
+    public Optional<ProductVariant> findVariantById(Long variantId) {
+        return jdbcClient.sql("""
+                SELECT id, product_id, external_id, title, sku, price, available
+                FROM product_variants WHERE id = :id
+                """)
+                .param("id", variantId)
+                .query((rs, rowNum) -> mapVariant(rs))
+                .optional();
+    }
+
+    public void toggleVariantAvailability(Long variantId) {
+        jdbcClient.sql("UPDATE product_variants SET available = NOT available WHERE id = :id")
+                .param("id", variantId)
+                .update();
+    }
+
     private Product mapProduct(ResultSet rs) throws SQLException {
         Product p = new Product();
         p.setId(rs.getLong("id"));

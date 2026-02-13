@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" class="wa-theme-default wa-dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Products</title>
+
+    <!-- Web Awesome -->
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css">
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"></script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(124, 92, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(157, 124, 255, 0.06) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7c5cfc, #9d7cff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--wa-color-neutral-500);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        wa-card {
+            margin-bottom: 1.5rem;
+        }
+
+        wa-card::part(body) {
+            padding: var(--wa-space-l);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--wa-border-radius-l);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead th {
+            background: var(--wa-color-neutral-100);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--wa-color-neutral-500);
+            border-bottom: 1px solid var(--wa-color-neutral-200);
+        }
+
+        table tbody td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--wa-color-neutral-200);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        table tbody tr:hover {
+            background: var(--wa-color-neutral-50);
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-image {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--wa-border-radius-m);
+            object-fit: cover;
+            border: 1px solid var(--wa-color-neutral-200);
+        }
+
+        .product-image-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--wa-border-radius-m);
+            background: var(--wa-color-neutral-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--wa-color-neutral-200);
+        }
+
+        .price {
+            font-weight: 600;
+            color: var(--wa-color-success-600);
+        }
+
+        .variant-row td {
+            background: var(--wa-color-neutral-100);
+            padding: 0.5rem 1rem;
+            font-size: 0.82rem;
+            color: var(--wa-color-neutral-500);
+        }
+
+        /* HTMX Loading */
+        .htmx-indicator {
+            display: none;
+        }
+
+        .htmx-request .htmx-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .htmx-request .btn-text {
+            display: none;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--wa-color-neutral-500);
+        }
+
+        .empty-state wa-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--wa-color-brand-500);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: color 0.15s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--wa-color-brand-300);
+        }
+
+        .search-box {
+            margin-bottom: 1rem;
+        }
+
+        /* HTMX transitions */
+        .htmx-added {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-links">
+            <a href="/">
+                <wa-icon name="arrow-left"></wa-icon>
+                Back to Home
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <wa-icon name="search" style="font-size: 2rem;"></wa-icon>
+                Search Products
+            </h1>
+            <p>Search for products by title</p>
+        </div>
+
+        <!-- Search Card -->
+        <wa-card>
+            <div class="card-header">
+                <div class="card-title">
+                    <wa-icon name="search" style="color: var(--wa-color-brand-500);"></wa-icon>
+                    Search
+                </div>
+            </div>
+            <div class="search-box">
+                <wa-input id="search-input" label="Search by title" placeholder="Start typing to search..."
+                    appearance="filled" clearable hx-get="/search/results"
+                    hx-trigger="input changed delay:300ms, search" hx-target="#search-results-container"
+                    hx-swap="innerHTML" name="q">
+                    <wa-icon slot="prefix" name="search"></wa-icon>
+                    <span slot="suffix" class="htmx-indicator">
+                        <wa-spinner></wa-spinner>
+                    </span>
+                </wa-input>
+            </div>
+        </wa-card>
+
+        <!-- Search Results Card -->
+        <wa-card>
+            <div class="card-header">
+                <div class="card-title">
+                    <wa-icon name="bar-chart-line-fill" style="color: var(--wa-color-brand-500);"></wa-icon>
+                    Results
+                </div>
+            </div>
+            <div id="search-results-container">
+                <div class="empty-state">
+                    <wa-icon name="search"></wa-icon>
+                    <h3>Type to search</h3>
+                    <p>Enter a product title above to see matching results.</p>
+                </div>
+            </div>
+        </wa-card>
+    </div>
+</body>
+
+</html>

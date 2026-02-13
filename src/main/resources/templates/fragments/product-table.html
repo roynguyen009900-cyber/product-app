@@ -26,6 +26,25 @@
             .toggle-variants.open wa-icon {
                 transform: rotate(90deg);
             }
+
+            .actions-cell {
+                display: flex;
+                gap: 0.4rem;
+                align-items: center;
+            }
+
+            .delete-dialog-body p {
+                font-size: 0.9rem;
+                color: var(--wa-color-neutral-500);
+                margin: 0;
+                line-height: 1.5;
+            }
+
+            .delete-dialog-actions {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+            }
         </style>
 
         <!-- Empty state -->
@@ -46,6 +65,7 @@
                         <th>Vendor</th>
                         <th>Price</th>
                         <th>Variants</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,6 +105,22 @@
                                     th:data-product="${stat.index}"
                                     onclick="toggleVariants(this.previousElementSibling)"></wa-icon>
                             </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <a th:href="@{/products/{id}/edit(id=${product.id})}">
+                                        <wa-button size="small" variant="neutral">
+                                            <wa-icon slot="prefix" name="pencil" style="font-size: 0.8rem;"></wa-icon>
+                                            Edit
+                                        </wa-button>
+                                    </a>
+                                    <wa-button size="small" variant="danger" outline th:data-product-id="${product.id}"
+                                        th:data-product-title="${product.title}"
+                                        onclick="openDeleteDialog(this.dataset.productId, this.dataset.productTitle)">
+                                        <wa-icon slot="prefix" name="trash" style="font-size: 0.8rem;"></wa-icon>
+                                        Delete
+                                    </wa-button>
+                                </div>
+                            </td>
                         </tr>
                         <!-- Variant rows (collapsed by default) -->
                         <tr th:each="variant : ${product.variants}" class="variant-row" th:data-product="${stat.index}">
@@ -98,18 +134,31 @@
                                 <!-- Options removed - now using title field only -->
                             </td>
                             <td class="price" th:text="'$' + ${#numbers.formatDecimal(variant.price, 1, 2)}">$0.00</td>
-                            <td>
+                            <td th:id="'variant-cell-' + ${variant.id}">
                                 <span th:if="${variant.available}"
-                                    style="font-size: 0.85rem; color: var(--wa-color-success-600);">
+                                    style="font-size: 0.85rem; color: var(--wa-color-success-600); display: flex; align-items: center; gap: 0.4rem;">
                                     <wa-icon name="check-circle" style="font-size: 0.85rem;"></wa-icon>
                                     Available
+                                    <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+                                        th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
+                                        th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                                        <wa-icon slot="prefix" name="toggle-on" style="font-size: 0.8rem;"></wa-icon>
+                                        Toggle
+                                    </wa-button>
                                 </span>
                                 <span th:unless="${variant.available}"
-                                    style="font-size: 0.85rem; color: var(--wa-color-danger-600);">
+                                    style="font-size: 0.85rem; color: var(--wa-color-danger-600); display: flex; align-items: center; gap: 0.4rem;">
                                     <wa-icon name="x-circle" style="font-size: 0.85rem;"></wa-icon>
                                     Sold Out
+                                    <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+                                        th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
+                                        th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                                        <wa-icon slot="prefix" name="toggle-off" style="font-size: 0.8rem;"></wa-icon>
+                                        Toggle
+                                    </wa-button>
                                 </span>
                             </td>
+                            <td></td>
                         </tr>
                     </th:block>
                 </tbody>
@@ -121,6 +170,26 @@
             </div>
         </div>
 
+        <!-- Delete Confirmation Dialog -->
+        <wa-dialog id="delete-dialog" label="Delete Product">
+            <wa-icon slot="header-icon" name="exclamation-triangle-fill"
+                style="color: var(--wa-color-danger-500); font-size: 1.2rem;"></wa-icon>
+            <div class="delete-dialog-body">
+                <p>Are you sure you want to delete <strong id="delete-product-name"></strong>? This action cannot be
+                    undone.</p>
+            </div>
+            <div slot="footer" class="delete-dialog-actions">
+                <wa-button variant="neutral" onclick="document.getElementById('delete-dialog').hide()">
+                    Cancel
+                </wa-button>
+                <wa-button id="confirm-delete-btn" variant="danger" hx-swap="innerHTML"
+                    hx-target="#product-table-container">
+                    <wa-icon slot="prefix" name="trash"></wa-icon>
+                    Delete
+                </wa-button>
+            </div>
+        </wa-dialog>
+
         <script>
             function toggleVariants(tag) {
                 const productId = tag.dataset.product;
@@ -128,6 +197,22 @@
                 const isOpen = tag.classList.toggle('open');
                 rows.forEach(row => row.classList.toggle('expanded', isOpen));
             }
+
+            function openDeleteDialog(productId, productName) {
+                const dialog = document.getElementById('delete-dialog');
+                document.getElementById('delete-product-name').textContent = productName;
+                const confirmBtn = document.getElementById('confirm-delete-btn');
+                confirmBtn.setAttribute('hx-delete', '/products/' + productId);
+                htmx.process(confirmBtn);
+                dialog.show();
+            }
+
+            document.addEventListener('htmx:afterRequest', function (event) {
+                const dialog = document.getElementById('delete-dialog');
+                if (dialog) {
+                    dialog.hide();
+                }
+            });
         </script>
     </div>
 </body>
