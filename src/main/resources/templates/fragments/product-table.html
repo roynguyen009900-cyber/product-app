@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="productTable">
+        <style>
+            .variant-row {
+                display: none;
+            }
+
+            .variant-row.expanded {
+                display: table-row;
+            }
+
+            .toggle-variants {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .toggle-variants wa-icon {
+                transition: transform 0.2s ease;
+                margin-left: 0.3rem;
+                font-size: 0.7rem;
+            }
+
+            .toggle-variants.open wa-icon {
+                transform: rotate(90deg);
+            }
+        </style>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(products)}" class="empty-state">
+            <wa-icon name="box-seam" style="font-size: 3rem;"></wa-icon>
+            <h3>No products found</h3>
+            <p>Try adding a product manually.</p>
+        </div>
+
+        <!-- Products table -->
+        <div th:if="${!#lists.isEmpty(products)}" class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Image</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Vendor</th>
+                        <th>Price</th>
+                        <th>Variants</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <th:block th:each="product, stat : ${products}">
+                        <tr>
+                            <td>
+                                <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}"
+                                    th:alt="${product.title}" class="product-image" loading="lazy">
+                                <div th:if="${product.imageUrl == null}" class="product-image-placeholder">
+                                    <wa-icon name="image"
+                                        style="font-size: 1.2rem; color: var(--wa-color-neutral-400);"></wa-icon>
+                                </div>
+                            </td>
+                            <td>
+                                <strong th:text="${product.title}">Product Title</strong>
+                                <br>
+                                <span th:if="${product.handle != null}"
+                                    style="font-size: 0.75rem; color: var(--wa-color-neutral-500);"
+                                    th:text="'/' + ${product.handle}">/handle</span>
+                            </td>
+                            <td>
+                                <wa-tag th:if="${product.productType != null}" variant="brand" size="small"
+                                    th:text="${product.productType}">Type</wa-tag>
+                            </td>
+                            <td th:text="${product.vendor}">Vendor</td>
+                            <td class="price">
+                                <span th:if="${product.price != null}"
+                                    th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
+                            </td>
+                            <td>
+                                <wa-tag variant="success" size="small" class="toggle-variants"
+                                    th:data-product="${stat.index}" onclick="toggleVariants(this)"
+                                    th:text="${#lists.size(product.variants)} + ' variants'">0 variants</wa-tag>
+                                <wa-icon name="chevron-down" style="font-size: 0.7rem; opacity: 0.6; cursor: pointer;"
+                                    th:data-product="${stat.index}"
+                                    onclick="toggleVariants(this.previousElementSibling)"></wa-icon>
+                            </td>
+                        </tr>
+                        <!-- Variant rows (collapsed by default) -->
+                        <tr th:each="variant : ${product.variants}" class="variant-row" th:data-product="${stat.index}">
+                            <td></td>
+                            <td th:text="${variant.title}" style="padding-left: 2rem;">Variant Title</td>
+                            <td>
+                                <span th:if="${variant.sku != null}" style="font-size: 0.78rem; font-family: monospace;"
+                                    th:text="${variant.sku}">SKU</span>
+                            </td>
+                            <td>
+                                <!-- Options removed - now using title field only -->
+                            </td>
+                            <td class="price" th:text="'$' + ${#numbers.formatDecimal(variant.price, 1, 2)}">$0.00</td>
+                            <td>
+                                <wa-tag th:if="${variant.available}" variant="success" appearance="accent" size="small">
+                                    <wa-icon slot="prefix" name="check-circle"></wa-icon>
+                                    Available
+                                </wa-tag>
+                                <wa-tag th:unless="${variant.available}" variant="danger" appearance="accent"
+                                    size="small">
+                                    <wa-icon slot="prefix" name="x-circle"></wa-icon>
+                                    Sold Out
+                                </wa-tag>
+                            </td>
+                        </tr>
+                    </th:block>
+                </tbody>
+            </table>
+            <wa-divider></wa-divider>
+            <div style="padding: 0.8rem 1rem; color: var(--wa-color-neutral-500); font-size: 0.82rem;">
+                <wa-icon name="info-circle" style="margin-right: 0.3rem;"></wa-icon>
+                <span th:text="${#lists.size(products)} + ' products loaded'">0 products loaded</span>
+            </div>
+        </div>
+
+        <script>
+            function toggleVariants(tag) {
+                const productId = tag.dataset.product;
+                const rows = document.querySelectorAll(`.variant-row[data-product="${productId}"]`);
+                const isOpen = tag.classList.toggle('open');
+                rows.forEach(row => row.classList.toggle('expanded', isOpen));
+            }
+        </script>
+    </div>
+</body>
+
+</html>

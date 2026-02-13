@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: product-app
+  datasource:
+    url: jdbc:postgresql://localhost:5432/productdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+
+product:
+  fetch-url: https://famme.no/products.json
+  max-products: 50
