@@ -67,8 +67,9 @@
                                     th:text="'/' + ${product.handle}">/handle</span>
                             </td>
                             <td>
-                                <wa-tag th:if="${product.productType != null}" variant="brand" size="small"
-                                    th:text="${product.productType}">Type</wa-tag>
+                                <span th:if="${product.productType != null}"
+                                    style="font-size: 0.85rem; color: var(--wa-color-brand-600);"
+                                    th:text="${product.productType}">Type</span>
                             </td>
                             <td th:text="${product.vendor}">Vendor</td>
                             <td class="price">
@@ -76,9 +77,10 @@
                                     th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$0.00</span>
                             </td>
                             <td>
-                                <wa-tag variant="success" size="small" class="toggle-variants"
+                                <span variant="success" size="small" class="toggle-variants"
+                                    style="font-size: 0.85rem; color: var(--wa-color-success-600); cursor: pointer;"
                                     th:data-product="${stat.index}" onclick="toggleVariants(this)"
-                                    th:text="${#lists.size(product.variants)} + ' variants'">0 variants</wa-tag>
+                                    th:text="${#lists.size(product.variants)} + ' variants'">0 variants</span>
                                 <wa-icon name="chevron-down" style="font-size: 0.7rem; opacity: 0.6; cursor: pointer;"
                                     th:data-product="${stat.index}"
                                     onclick="toggleVariants(this.previousElementSibling)"></wa-icon>
@@ -97,15 +99,16 @@
                             </td>
                             <td class="price" th:text="'$' + ${#numbers.formatDecimal(variant.price, 1, 2)}">$0.00</td>
                             <td>
-                                <wa-tag th:if="${variant.available}" variant="success" appearance="accent" size="small">
-                                    <wa-icon slot="prefix" name="check-circle"></wa-icon>
+                                <span th:if="${variant.available}"
+                                    style="font-size: 0.85rem; color: var(--wa-color-success-600);">
+                                    <wa-icon name="check-circle" style="font-size: 0.85rem;"></wa-icon>
                                     Available
-                                </wa-tag>
-                                <wa-tag th:unless="${variant.available}" variant="danger" appearance="accent"
-                                    size="small">
-                                    <wa-icon slot="prefix" name="x-circle"></wa-icon>
+                                </span>
+                                <span th:unless="${variant.available}"
+                                    style="font-size: 0.85rem; color: var(--wa-color-danger-600);">
+                                    <wa-icon name="x-circle" style="font-size: 0.85rem;"></wa-icon>
                                     Sold Out
-                                </wa-tag>
+                                </span>
                             </td>
                         </tr>
                     </th:block>
