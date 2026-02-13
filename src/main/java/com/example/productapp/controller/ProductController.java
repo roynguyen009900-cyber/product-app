@@ -2,7 +2,7 @@ package com.example.productapp.controller;
 
 import com.example.productapp.model.Product;
 import com.example.productapp.model.ProductVariant;
-import com.example.productapp.service.ProductFetchService;
+
 import com.example.productapp.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -18,11 +18,9 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final ProductFetchService productFetchService;
 
-    public ProductController(ProductService productService, ProductFetchService productFetchService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.productFetchService = productFetchService;
     }
 
     @GetMapping("/")
@@ -66,14 +64,6 @@ public class ProductController {
         }
 
         productService.addProduct(title, vendor, productType, price, variants);
-        List<Product> products = productService.getAllProducts();
-        model.addAttribute("products", products);
-        return "fragments/product-table :: productTable";
-    }
-
-    @PostMapping("/products/fetch")
-    public String fetchProducts(Model model) {
-        productFetchService.fetchProductsManually();
         List<Product> products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "fragments/product-table :: productTable";

@@ -85,10 +85,6 @@ public class ProductFetchService {
         }
     }
 
-    public void fetchProductsManually() {
-        fetchProducts();
-    }
-
     private Product parseProduct(JsonNode node) {
         Product product = new Product();
         product.setExternalId(node.get("id").asLong());
