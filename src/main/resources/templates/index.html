@@ -7,8 +7,10 @@
     <title>Product Manager</title>
 
     <!-- Web Awesome -->
-    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css">
-    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/styles/themes/default.css">
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/webawesome.loader.js"></script>
 
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -523,6 +525,9 @@
                 </div>
             </div>
         </wa-card>
+
+        <!-- Components -->
+        <div th:replace="~{fragments/delete-dialog :: deleteDialog}"></div>
     </div>
 </body>
 

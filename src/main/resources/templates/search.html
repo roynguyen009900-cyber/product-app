@@ -7,8 +7,10 @@
     <title>Search Products</title>
 
     <!-- Web Awesome -->
-    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css">
-    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/styles/themes/default.css">
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3.2.1/dist-cdn/webawesome.loader.js"></script>
 
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -275,7 +277,7 @@
             <div class="search-box">
                 <wa-input id="search-input" label="Search by title" placeholder="Start typing to search..."
                     appearance="filled" clearable hx-get="/search/results"
-                    hx-trigger="input changed delay:300ms, search" hx-target="#search-results-container"
+                    hx-trigger="input changed delay:300ms, search" hx-target="#product-table-container"
                     hx-swap="innerHTML" name="q">
                     <wa-icon slot="prefix" name="search"></wa-icon>
                     <span slot="suffix" class="htmx-indicator">
@@ -293,7 +295,7 @@
                     Results
                 </div>
             </div>
-            <div id="search-results-container">
+            <div id="product-table-container">
                 <div class="empty-state">
                     <wa-icon name="search"></wa-icon>
                     <h3>Type to search</h3>
@@ -301,6 +303,9 @@
                 </div>
             </div>
         </wa-card>
+
+        <!-- Components -->
+        <div th:replace="~{fragments/delete-dialog :: deleteDialog}"></div>
     </div>
 </body>
 

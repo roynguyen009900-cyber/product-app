@@ -7,9 +7,9 @@
             style="font-size: 0.85rem; color: var(--wa-color-success-600); display: flex; align-items: center; gap: 0.4rem;">
             <wa-icon name="check-circle" style="font-size: 0.85rem;"></wa-icon>
             Available
-            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;" th:id="'toggle-btn-' + ${variant.id}"
                 th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
-                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML" hx-on:click="this.blur()">
                 <wa-icon slot="prefix" name="toggle-on" style="font-size: 0.8rem;"></wa-icon>
                 Toggle
             </wa-button>
@@ -18,9 +18,9 @@
             style="font-size: 0.85rem; color: var(--wa-color-danger-600); display: flex; align-items: center; gap: 0.4rem;">
             <wa-icon name="x-circle" style="font-size: 0.85rem;"></wa-icon>
             Sold Out
-            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;"
+            <wa-button size="small" variant="neutral" style="margin-left: 0.5rem;" th:id="'toggle-btn-' + ${variant.id}"
                 th:hx-put="'/variants/' + ${variant.id} + '/toggle-availability'"
-                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML">
+                th:hx-target="'#variant-cell-' + ${variant.id}" hx-swap="innerHTML" hx-on:click="this.blur()">
                 <wa-icon slot="prefix" name="toggle-off" style="font-size: 0.8rem;"></wa-icon>
                 Toggle
             </wa-button>
